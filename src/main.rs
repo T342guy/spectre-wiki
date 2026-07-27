@@ -1,56 +1,36 @@
-use axum::{Extension, Router, routing::{get, post}};
+use axum::{
+    Extension, Router,
+    extract::*,
+    routing::{get, post},
+};
+use std::sync::Arc;
 
-#[derive(Debug, toasty::Model)]
-struct Page {
-    #[key]
-    #[auto]
-    id: u32,
-    #[unique]
-    slug: String,
-    title: String,
-    content: String,
-}
+mod handlers;
+mod templates;
 
-async fn index() -> &'static str {
-    "Welcome to Spectre Wiki!"
-}
-
-// async fn get_page() -> &'static str {
-
-// }
-
-// async fn edit_page() -> &'static str {
-
-// }
-
-// async fn update_page() -> &'static str {
-
-// }
-
-// async fn delete_page() -> &'static str {
-
-// }
-
+use axum_template::engine::Engine;
+use handlers::*;
+use minijinja::{Environment, path_loader};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Starting Spectre Wiki");
 
-    // todo: Initialize the database connection
+    let template_path = "./templates";
+    let mut tmpl_env = Environment::new();
+    tmpl_env.set_loader(path_loader(template_path));
 
-    // in-memory database for testing
-    // let db = toasty::Db::builder()
-    //     .models(toasty::models!(crate::*))
-    //     .connect("turso::memory:")
-    //     .await?;
-    let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "turso:./app.db".to_string());    
+    let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "turso:./app.db".to_string());
 
     let db = toasty::Db::builder()
-    .models(toasty::models!(crate::*))
-    .connect(&db_url)    
-    .await?;
+        .models(toasty::models!(crate::*))
+        .connect(&db_url)
+        .await?;
 
-    //db.push_schema().await?;
+    let shared_state = Arc::new(handlers::AppState {
+        db,
+        tmpl_engine: tmpl_env,
+    });
 
     // Router
     let app = Router::new()
@@ -58,10 +38,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // .route("/page/:slug", get(get_page))
         // .route("/page/:slug/edit", get(edit_page).post(update_page))
         // .route("/page/:slug/delete", post(delete_page))
-        .layer(Extension(db));
+        .layer(Extension(shared_state));
 
     println!("Listening on http://localhost:3000");
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();    
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 
     Ok(())

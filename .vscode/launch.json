@@ -8,7 +8,7 @@
       "request": "launch",
       "name": "Debug Rust App",
         "env": {
-          "TURSO_DATABASE_URL": "turso:./app.db"
+          "DATABASE_URL": "turso:./app.db"
         },
       "cargo": {
         "args": [
