@@ -2,9 +2,10 @@
 The spectre wiki project is a software engineering project aiming for next-generation, fast, advanced and modular wiki technology.
 ## Tech stack
 - Main language - Rust
-- UI - Leptos: in SSR mode
-- Database - spacetimeDB - first supported tech, add more with [[#Database stacks]].
-- web framework - Axum
+<!-- - UI - Leptos: in SSR mode -->
+- Database - `spacetimeDB`, or `Turso`
+- Web framework - `Axum`
+- logging - `Tracing` - https://crates.io/crates/tracing
 ### Quality of life
 - Easy to setup podman/docker containers
 - Interactive setup
@@ -16,7 +17,7 @@ The spectre wiki project is a software engineering project aiming for next-gener
 ## Fundamental features
 (Features that have already existed for a long time in other wiki tech and are essential)
 - **(fundamental feature)** rule based Access control - server level
-	- fine grained control (edit, read, conflict resolution perms, ext.)
+	- fine-grained control (edit, read, conflict resolution perms, ext.)
 - **(fundamental feature)** edit difference history, aka diff history
 - **(fundamental feature)** conflict resolution
 ## Engine features
@@ -26,11 +27,12 @@ The spectre wiki project is a software engineering project aiming for next-gener
     - config files outline version names, and update accordingly so they work seamlessly in newer versions of spectre
 ### Uncertain features
 - Multi-database compatibility
+- System-level notifications? (overheating/near storage limits? for raspberry pi or latte panda servers?)
 ## Client features
 - Full image + audio streaming system
     - optional caching client option (uses temp files)
     - optional quality limiter (for streaming and server sided storage concerns)
-    - quality downgrading for low-bandwith clients
+    - quality downgrading for low-bandwidth clients
 - universal banner system (to be used by plugins and system).
 	- Banner system can change the body color, add an icon, change size and add links. 
 - Full markdown support using `pulldown-cmark`.
