@@ -6,6 +6,7 @@ The spectre wiki project is a software engineering project aiming for next-gener
 - Database - `spacetimeDB`, or `Turso`
 - Web framework - `Axum`
 - logging - `Tracing` - https://crates.io/crates/tracing
+- Modules sandboxing - WASMtime - https://github.com/bytecodealliance/wasmtime
 ### Quality of life
 - Easy to setup podman/docker containers
 - Interactive setup
@@ -43,7 +44,10 @@ The spectre wiki project is a software engineering project aiming for next-gener
      - add cool ones like carbon fiber, galaxy, and Y2K, stuff like that
 - Google maps object with coordinate and/or address
 - standard markdown embed support
-## Plugin system
+- use WASMtime to sandbox WASM plugins for security and control
+
+## Plugin/Module system
+The plugin/module system will use one WASMtime runtime with WASM compiled modules so potentially malicious, or bad code does not interact with the system. Additionally, this allows for fine-grained control of run states and system resources.
 
 # Development plan 
 ## Stage 1 - Alpha/prototype x.x.1
