@@ -3,6 +3,7 @@ use axum::response::IntoResponse;
 use jiff::{Timestamp};
 use std::sync::Arc;
 use minijinja::{context, Environment};
+use tracing::error;
 
 #[derive(Debug, toasty::Model)]
 pub struct Page {
@@ -27,11 +28,11 @@ pub struct AppState<'a> {
 pub async fn index(Extension(state): Extension<Arc<AppState<'static>>>) -> impl IntoResponse {
     let template = state.tmpl_engine.get_template("index.html").unwrap();
     
-    let s = template.render(context! { name => "Wade"});
+    let s = template.render(context! { name => "Wade"}); // upon /GET, serve index.html with context value for {{ user }} being "Wade".
     
-    match s {
+    match s { //what does this do?
         Ok(s) => s,
-        Err(e) => { String::from("something happened") }
+        Err(e) => { String::from("Undefined render error") }
     }
 }
 
