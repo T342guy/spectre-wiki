@@ -4,17 +4,17 @@ use axum::{
     routing::{get, post},
 };
 use std::sync::Arc;
-use tracing::{event, span, Level, Subscriber, info};
-use tracing_subscriber::{
-    FmtSubscriber, EnvFilter
-};
+use tracing::{event, span, Level, instrument ,info};
+use tracing_subscriber::{FmtSubscriber};
 mod handlers;
 mod templates;
 use axum_template::engine::Engine;
 use handlers::*;
 use minijinja::{Environment, path_loader};
+const LOC_TEMPLATE_PATH: &str = "./templates"; // make this a const since we don't want this to ever be dropped
 
 #[tokio::main]
+#[instrument(name = "spectre-wiki::main::main()")] // T3: insert bigger brains, idk i cant see anything different with this
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let subscriber = FmtSubscriber::builder()
         // all spans/events with a level higher than info will be written to stdout.
@@ -25,9 +25,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Spectre wiki is starting...");
 
-    let template_path = "./templates";
     let mut tmpl_env = Environment::new();
-    tmpl_env.set_loader(path_loader(template_path));
+    tmpl_env.set_loader(path_loader(LOC_TEMPLATE_PATH));
 
     let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "turso:./app.db".to_string());
 

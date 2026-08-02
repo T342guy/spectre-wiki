@@ -1,5 +1,7 @@
-use axum::Extension;
-use axum::response::IntoResponse;
+use axum::{
+    response::IntoResponse,
+    Extension
+};
 use jiff::{Timestamp};
 use std::sync::Arc;
 use minijinja::{context, Environment};
@@ -18,7 +20,7 @@ pub struct Page {
     created_at: Timestamp,
     updated_at: Timestamp,
 }
-
+const CONTEXT_HTML_INSTERT: &str = "Nathan";
 #[derive(Clone)]
 pub struct AppState<'a> {
     pub db: toasty::Db,
@@ -27,8 +29,12 @@ pub struct AppState<'a> {
 
 pub async fn index(Extension(state): Extension<Arc<AppState<'static>>>) -> impl IntoResponse {
     let template = state.tmpl_engine.get_template("index.html").unwrap();
-    
-    let s = template.render(context! { name => "Wade"}); // upon /GET, serve index.html with context value for {{ user }} being "Wade".
+
+    /*
+    upon /GET, serve index.html with context value for {{ user }}.
+    Currently, this is set as an &str const value for testing purposes.
+     */
+    let s = template.render(context! { name => CONTEXT_HTML_INSTERT});
     
     match s { //what does this do?
         Ok(s) => s,
